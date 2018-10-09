@@ -1,25 +1,37 @@
 import QtQuick 2.6
-import CreativeControls 1.0
+import com.github.jcelerier.CreativeControls 1.0
+
 
 // A matrix of buttons. Buttons can be toggles or triggers.
-Grid
-{
+Grid {
     id: grid
 
-    width : 200
-    height : 200
+    width: 200
+    height: 200
 
     columns: 3
     rows: 3
     spacing: 5
     padding: 2.5
-    horizontalItemAlignment : Grid.AlignHCenter
-    verticalItemAlignment : Grid.AlignVCenter
+    horizontalItemAlignment: Grid.AlignHCenter
+    verticalItemAlignment: Grid.AlignVCenter
+
+    property real radius: styles.cornerRadius
 
     property bool togglable: false
     property var pressed: []
+    property var styles: DarkStyle
+    onStylesChanged: {
+        for (var k = 0; k < repeater.count; k++) {
+            var item = repeater.itemAt(k)
+            if (item !== null) {
+                item.color = item.toggled ? styles.colorOn : styles.colorOff
+            }
+        }
+    }
 
     Repeater {
+        id: repeater
         model: parent.columns * parent.rows
 
         anchors.fill: parent
@@ -29,37 +41,37 @@ Grid
 
             width: grid.width / grid.columns - 5
             height: grid.height / grid.rows - 5
-            radius: 14
+            radius: grid.radius
 
-            color: Styles.colorOn
+            color: styles.colorOff
             border.width: 3
-            border.color: Styles.background
+            border.color: styles.colorOnLighter
 
-            property bool toggled : false
+            property bool toggled: false
 
             onToggledChanged: {
-                if(toggled)
-                    rect.color = Styles.detail;
+                if (toggled)
+                    rect.color = styles.colorOn
                 else
-                    rect.color = Styles.colorOn;
+                    rect.color = styles.colorOff
             }
 
             MouseArea {
                 anchors.fill: parent
 
                 onPressed: {
-                    if(togglable)
-                        toggled = !toggled;
+                    if (togglable)
+                        toggled = !toggled
                     else
-                        toggled = true;
-                    grid.pressed = [ index ]
+                        toggled = true
+                    grid.pressed = [index]
                 }
                 onReleased: {
-                    if(togglable)
+                    if (togglable)
                         ;
                     else
-                        toggled = false;
-                    grid.pressed = [ ]
+                        toggled = false
+                    grid.pressed = []
                 }
             }
         }

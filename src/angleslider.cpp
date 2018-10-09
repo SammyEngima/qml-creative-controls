@@ -1,7 +1,9 @@
 #include "angleslider.hpp"
+
 #include <QPainter>
-#include <complex>
 #include <QtMath>
+
+#include <complex>
 
 namespace CreativeControls
 {
@@ -18,7 +20,7 @@ AngleSlider::AngleSlider()
 void AngleSlider::paint(QPainter* painter)
 {
   const auto rect = boundingRect();
-  auto borderWidth = (rect.width() / 2) * 1./15.;
+  auto borderWidth = (rect.width() / 2) * 1. / 15.;
   const auto radius = rect.width() / 2. - borderWidth / 2. - 1;
   QPen p;
   p.setWidth(borderWidth);
@@ -42,9 +44,12 @@ void AngleSlider::paint(QPainter* painter)
 
   p.setWidth(borderWidth * 0.75);
   painter->setPen(p);
-  painter->drawLine(QPointF{pt_min_end.real() + cx, pt_min_end.imag() + cy}, QPointF{pt_min.real() + cx, pt_min.imag() + cy});
-  painter->drawLine(QPointF{pt_max_end.real() + cx, pt_max_end.imag() + cy}, QPointF{pt_max.real() + cx, pt_max.imag() + cy});
-
+  painter->drawLine(
+      QPointF{pt_min_end.real() + cx, pt_min_end.imag() + cy},
+      QPointF{pt_min.real() + cx, pt_min.imag() + cy});
+  painter->drawLine(
+      QPointF{pt_max_end.real() + cx, pt_max_end.imag() + cy},
+      QPointF{pt_max.real() + cx, pt_max.imag() + cy});
 }
 
 qreal AngleSlider::angle() const
@@ -54,12 +59,12 @@ qreal AngleSlider::angle() const
 
 qreal AngleSlider::min() const
 {
-    return m_min;
+  return m_min;
 }
 
 qreal AngleSlider::max() const
 {
-    return m_max;
+  return m_max;
 }
 
 QColor AngleSlider::baseColor() const
@@ -72,56 +77,56 @@ QColor AngleSlider::detailColor() const
   return m_detailColor;
 }
 
-void AngleSlider::setAngle(qreal angle)
+void AngleSlider::setAngle(const qreal angle)
 {
-  if (m_angle == angle)
+  if (qFuzzyCompare(m_angle, angle))
     return;
 
   if (angle < min())
-      m_angle = min();
+    m_angle = min();
   else if (angle > max())
-      m_angle = max();
+    m_angle = max();
   else
     m_angle = angle;
   emit angleChanged(m_angle);
   update();
 }
 
-void AngleSlider::setMin(qreal angle)
+void AngleSlider::setMin(const qreal angle)
 {
-  if (m_min == angle)
+  if (qFuzzyCompare(m_min, angle))
     return;
 
   m_min = angle;
   update();
 }
 
-void AngleSlider::setMax(qreal angle)
+void AngleSlider::setMax(const qreal angle)
 {
-  if (m_max == angle)
+  if (qFuzzyCompare(m_max, angle))
     return;
 
   m_max = angle;
   update();
 }
 
-void AngleSlider::setBaseColor(QColor baseColor)
+void AngleSlider::setBaseColor(const QColor baseColor)
 {
   if (m_baseColor == baseColor)
     return;
 
   m_baseColor = baseColor;
-  emit baseColorChanged(baseColor);
+  emit baseColorChanged(m_baseColor);
   update();
 }
 
-void AngleSlider::setDetailColor(QColor detailColor)
+void AngleSlider::setDetailColor(const QColor detailColor)
 {
   if (m_detailColor == detailColor)
     return;
 
   m_detailColor = detailColor;
-  emit detailColorChanged(detailColor);
+  emit detailColorChanged(m_detailColor);
   update();
 }
 
@@ -160,7 +165,7 @@ void AngleSlider::mouseReleaseEvent(QMouseEvent* event)
 
 void AngleSlider::touchEvent(QTouchEvent* event)
 {
-  if(!event->touchPoints().empty())
+  if (!event->touchPoints().empty())
     updateAngle(event->touchPoints().first().pos());
   event->accept();
 }

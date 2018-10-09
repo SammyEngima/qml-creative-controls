@@ -1,6 +1,8 @@
 #include "xytarget.hpp"
-#include <QPainter>
+
 #include <QDebug>
+#include <QPainter>
+
 #include <cmath>
 
 namespace CreativeControls
@@ -28,14 +30,21 @@ void XYTarget::paint(QPainter* painter)
   painter->drawLine(w, 0., w, height());
   painter->drawLine(0., h, width(), h);
   painter->setRenderHint(QPainter::RenderHint::Antialiasing, true);
-  painter->drawEllipse(w - m_radius, h - m_radius, 2. * m_radius, 2. * m_radius);
+  painter->drawEllipse(
+      w - m_radius, h - m_radius, 2. * m_radius, 2. * m_radius);
 }
 
 void XYTarget::mousePressEvent(QMouseEvent* event)
 {
-  if(contains(event->pos()))
+  if (contains(event->pos()))
   {
+    auto new_x = event->pos().x() / width();
+    auto new_y = event->pos().y() / height();
+
     m_lastPos = event->pos();
+    setCenterX(new_x);
+    setCenterY(new_y);
+    setPressed(true);
     event->accept();
     return;
   }
@@ -44,7 +53,7 @@ void XYTarget::mousePressEvent(QMouseEvent* event)
 
 void XYTarget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-   event->ignore();
+  event->ignore();
 }
 
 void XYTarget::mouseMoveEvent(QMouseEvent* event)
@@ -60,19 +69,21 @@ void XYTarget::mouseMoveEvent(QMouseEvent* event)
 
 void XYTarget::mouseReleaseEvent(QMouseEvent* event)
 {
+  setPressed(false);
   event->accept();
 }
 
 void XYTarget::touchEvent(QTouchEvent* event)
 {
-  if(!event->touchPoints().empty())
+  if (!event->touchPoints().empty())
   {
+    setPressed(true);
     const auto& first = event->touchPoints().first();
-    switch(first.state())
+    switch (first.state())
     {
       case Qt::TouchPointPressed:
       {
-        if(contains(first.pos()))
+        if (contains(first.pos()))
         {
           m_lastPos = first.pos();
           event->accept();
@@ -104,16 +115,18 @@ void XYTarget::touchEvent(QTouchEvent* event)
         break;
     }
   }
+  else
+  {
+    setPressed(false);
+  }
 }
 
 bool XYTarget::contains(const QPointF& point) const
 {
   const auto w = m_centerX * width();
   const auto h = m_centerY * height();
-  return point.x() > (w - m_radius)
-      && point.x() < (w + m_radius)
-      && point.y() > (h - m_radius)
-      && point.y() < (h + m_radius);
+  return point.x() > (w - m_radius) && point.x() < (w + m_radius)
+         && point.y() > (h - m_radius) && point.y() < (h + m_radius);
 }
 
 void XYTarget::updatePenWidth()
@@ -121,17 +134,22 @@ void XYTarget::updatePenWidth()
   using namespace std;
   m_pen.setWidthF(lround(std::min(height(), width()) / 40.));
 
-  m_radius = std::min(height(), width()) / 35.;
+  m_radius = std::min(height(), width()) / m_radiusScale;
 }
 
-double XYTarget::centerX() const
+qreal XYTarget::centerX() const
 {
   return m_centerX;
 }
 
-double XYTarget::centerY() const
+qreal XYTarget::centerY() const
 {
   return m_centerY;
+}
+
+qreal XYTarget::radiusScale() const
+{
+  return m_radiusScale;
 }
 
 QColor XYTarget::color() const
@@ -139,9 +157,14 @@ QColor XYTarget::color() const
   return m_color;
 }
 
-void XYTarget::setCenterX(double centerX)
+bool XYTarget::pressed() const
 {
-  if (m_centerX == centerX)
+  return m_pressed;
+}
+
+void XYTarget::setCenterX(const qreal centerX)
+{
+  if (qFuzzyCompare(m_centerX, centerX))
     return;
 
   m_centerX = qBound(0., centerX, 1.);
@@ -149,9 +172,9 @@ void XYTarget::setCenterX(double centerX)
   update();
 }
 
-void XYTarget::setCenterY(double centerY)
+void XYTarget::setCenterY(const qreal centerY)
 {
-  if (m_centerY == centerY)
+  if (qFuzzyCompare(m_centerY, centerY))
     return;
 
   m_centerY = qBound(0., centerY, 1.);
@@ -159,7 +182,18 @@ void XYTarget::setCenterY(double centerY)
   update();
 }
 
-void XYTarget::setColor(QColor color)
+void XYTarget::setRadiusScale(const qreal radiusScale)
+{
+  if (qFuzzyCompare(m_radiusScale, radiusScale))
+    return;
+
+  m_radiusScale = radiusScale;
+  emit radiusScaleChanged(m_radiusScale);
+  updatePenWidth();
+  update();
+}
+
+void XYTarget::setColor(const QColor color)
 {
   if (m_color == color)
     return;
@@ -167,7 +201,16 @@ void XYTarget::setColor(QColor color)
   m_color = color;
   m_pen.setColor(m_color);
   m_brush.setColor(m_color);
-  emit colorChanged(color);
+  emit colorChanged(m_color);
   update();
+}
+
+void XYTarget::setPressed(const bool pressed)
+{
+  if (pressed != m_pressed)
+  {
+    m_pressed = pressed;
+    pressedChanged(m_pressed);
+  }
 }
 }

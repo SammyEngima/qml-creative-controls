@@ -2,6 +2,8 @@ QT += qml quick
 CONFIG += c++11 plugin
 TEMPLATE = lib
 
+# QMAKE_CXXFLAGS += -fsanitize=address -fsanitize=undefined -O0
+# QMAKE_LFLAGS += -fsanitize=address -fsanitize=undefined -O0
 QML_IMPORT_PATH += $$PWD
 QML2_IMPORT_PATH += $$PWD
 QML_DESIGNER_IMPORT_PATH += $$PWD
@@ -10,76 +12,81 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 HEADERS += \
-    src/graph.hpp \
-    src/creativecontrolsplugin.hpp \
-    src/angleslider.hpp \
-    src/scope.hpp \
-    src/cpputils.hpp \
-    src/xytarget.hpp \
-    src/polygon.hpp \
-    src/toucharea.hpp \
-    src/painted_polygon.hpp
+    $$PWD/src/graph.hpp \
+    $$PWD/src/creativecontrolsplugin.hpp \
+    $$PWD/src/angleslider.hpp \
+    $$PWD/src/scope.hpp \
+    $$PWD/src/cpputils.hpp \
+    $$PWD/src/xytarget.hpp \
+    $$PWD/src/polygon.hpp \
+    $$PWD/src/toucharea.hpp \
+    $$PWD/src/painted_polygon.hpp
 
 SOURCES += \
-    src/graph.cpp \
-    src/creativecontrolsplugin.cpp \
-    src/angleslider.cpp \
-    src/scope.cpp \
-    src/cpputils.cpp \
-    src/xytarget.cpp \
-    src/polygon.cpp \
-    src/toucharea.cpp \
-    src/painted_polygon.cpp
+    $$PWD/src/graph.cpp \
+    $$PWD/src/creativecontrolsplugin.cpp \
+    $$PWD/src/angleslider.cpp \
+    $$PWD/src/scope.cpp \
+    $$PWD/src/cpputils.cpp \
+    $$PWD/src/xytarget.cpp \
+    $$PWD/src/polygon.cpp \
+    $$PWD/src/toucharea.cpp \
+    $$PWD/src/painted_polygon.cpp
 
 DESTDIR = $$_PRO_FILE_PWD_/CreativeControls/
 
 OTHER_FILES += \
-    examples/Gallery.qml
-
-OTHER_FILES += \
-    CreativeControls/AngleSlider.qml \
-    CreativeControls/ArcSlider.qml \
-    CreativeControls/ColorChooser.qml \
-    CreativeControls/ColorSlider.qml \
-    CreativeControls/ColorWheel.qml \
-    CreativeControls/Container.qml \
-    CreativeControls/CosInfluence.qml \
-    CreativeControls/DonutSlider.qml \
-    CreativeControls/Frame.qml \
-    CreativeControls/Graph2D.qml \
-    CreativeControls/Graph.qml \
-    CreativeControls/HSLSlider.qml \
-    CreativeControls/HSVSlider.qml \
-    CreativeControls/Joystick.qml \
-    CreativeControls/Keyboard.qml \
-    CreativeControls/Leds.qml \
-    CreativeControls/LogSlider.qml \
-    CreativeControls/Matrix.qml \
-    CreativeControls/MultiSlider.qml \
-    CreativeControls/Random1D.qml \
-    CreativeControls/Random2D.qml \
-    CreativeControls/Random3D.qml \
-    CreativeControls/RangeSlider.qml \
-    CreativeControls/RGBSlider.qml \
-    CreativeControls/Scale.qml \
-    CreativeControls/Scope.qml \
-    CreativeControls/Slider.qml \
-    CreativeControls/Spat.qml \
-    CreativeControls/Spectrum.qml \
-    CreativeControls/Step.qml \
-    CreativeControls/Styles.qml \
-    CreativeControls/Switch.qml \
-    CreativeControls/Trajectory.qml \
-    CreativeControls/Utils.qml \
-    CreativeControls/XYPad.qml
-
-OTHER_FILES += \
-    CreativeControls/qmldir \
-    CreativeControls/designer/CreativeControls.metainfo \
-    README.md
+    $$PWD/CreativeControls/AngleSlider.qml \
+    $$PWD/CreativeControls/ArcSlider.qml \
+    $$PWD/CreativeControls/ColorChooser.qml \
+    $$PWD/CreativeControls/ColorSlider.qml \
+    $$PWD/CreativeControls/ColorWheel.qml \
+    $$PWD/CreativeControls/Container.qml \
+    $$PWD/CreativeControls/CosInfluence.qml \
+    $$PWD/CreativeControls/DarkStyle.qml \
+    $$PWD/CreativeControls/DonutSlider.qml \
+    $$PWD/CreativeControls/Frame.qml \
+    $$PWD/CreativeControls/Graph2D.qml \
+    $$PWD/CreativeControls/Graph.qml \
+    $$PWD/CreativeControls/HRangeSlider.qml \
+    $$PWD/CreativeControls/HSlider.qml \
+    $$PWD/CreativeControls/HSLSlider.qml \
+    $$PWD/CreativeControls/HSVSlider.qml \
+    $$PWD/CreativeControls/Joystick.qml \
+    $$PWD/CreativeControls/Keyboard.qml \
+    $$PWD/CreativeControls/Label.qml \
+    $$PWD/CreativeControls/Leds.qml \
+    $$PWD/CreativeControls/LightStyle.qml \
+    $$PWD/CreativeControls/Matrix.qml \
+    $$PWD/CreativeControls/MultiSlider.qml \
+    $$PWD/CreativeControls/Random1D.qml \
+    $$PWD/CreativeControls/Random2D.qml \
+    $$PWD/CreativeControls/Random3D.qml \
+    $$PWD/CreativeControls/RGBSlider.qml \
+    $$PWD/CreativeControls/Scale.qml \
+    $$PWD/CreativeControls/Scope.qml \
+    $$PWD/CreativeControls/Spat.qml \
+    $$PWD/CreativeControls/Spectrum.qml \
+    $$PWD/CreativeControls/Step.qml \
+    $$PWD/CreativeControls/Switch.qml \
+    $$PWD/CreativeControls/ToggleSwitch.qml \
+    $$PWD/CreativeControls/Trajectory.qml \
+    $$PWD/CreativeControls/Utils.qml \
+    $$PWD/CreativeControls/VRangeSlider.qml \
+    $$PWD/CreativeControls/VSlider.qml \
+    $$PWD/CreativeControls/XYPad.qml \
+    $$PWD/CreativeControls/qmldir \
+    $$PWD/CreativeControls/designer/CreativeControls.metainfo \
+    $$PWD/README.md
 
 DISTFILES += \
-    examples/OssiaClientExample.qml \
-    examples/OssiaServerExample.qml \
-    examples/Overview.qml \
-    examples/ContainerExample.qml
+    $$PWD/examples/Limiter.qml \
+    $$PWD/examples/Gallery.qml \
+    $$PWD/examples/OssiaClientExample.qml \
+    $$PWD/examples/OssiaServerExample.qml \
+    $$PWD/examples/Overview.qml \
+    $$PWD/examples/SimpleStep.qml \
+    $$PWD/examples/ContainerExample.qml \
+    $$PWD/examples/Spectrogram.qml \
+    $$PWD/tests/SliderTest.qml \
+    $$PWD/tests/Various.qml

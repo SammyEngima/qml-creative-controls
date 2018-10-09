@@ -1,40 +1,38 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.1
-import CreativeControls 1.0
+import com.github.jcelerier.CreativeControls 1.0
 
-Page
-{
+Page {
     Row {
-    Container
-    {
-        height: col.childrenRect.height + 2 * radius
-        Column
-        {
-            id: col
-            Repeater {
-                model :5
-                Column {
-            Slider
-            {
-                height: 50
+        Container {
+            height: col.childrenRect.height + 2 * radius
 
-            }
-            Text
-            {
-                height: 50
-                text: "coucou"
-                color: "white"
-                font.pointSize: 34
-            } }
+            Column {
+                id: col
+
+                Repeater {
+                    model :5
+
+                    Column {
+                        HSlider {
+                            height: 50
+                        }
+                        Text {
+                            height: 50
+                            text: "coucou"
+                            color: "white"
+                            font.pointSize: 34
+                        }
+                    }
+                }
             }
         }
-    }
 
-    Container {
-        Slider {
-            anchors.fill: parent
+        Container {
+            VSlider {
+                anchors.fill: parent
+            }
         }
-    }
     }
 }

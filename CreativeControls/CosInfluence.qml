@@ -1,5 +1,6 @@
 import QtQuick 2.6
-import CreativeControls 1.0
+import com.github.jcelerier.CreativeControls 1.0
+
 
 // Cosine influence area.
 // Parameters:
@@ -7,72 +8,77 @@ import CreativeControls 1.0
 // * centerX / centerY: the position of the crosshair
 // * values: when the crosshair moves, values is updated to contain an array of distances
 //           to each point in points
-Rectangle
-{
+Rectangle {
     id: cosInfluence
 
-    property var points : [Qt.point(0.2, 0.4), Qt.point(0.5, 0.1)]
-    property alias centerX : xy.centerX
-    property alias centerY : xy.centerY
+    property var points: [Qt.point(0.2, 0.4), Qt.point(0.5, 0.1)]
+    property alias centerX: xy.centerX
+    property alias centerY: xy.centerY
     onCenterXChanged: updateValues()
     onCenterYChanged: updateValues()
     onPointsChanged: updateValues()
 
-    color : Styles.background
-    property real sizeRatio : Math.min(cosInfluence.width, cosInfluence.height) / 15.
+    property var styles: DarkStyle
+    color: styles.background
+
+    property real sizeRatio: Math.min(cosInfluence.width,
+                                      cosInfluence.height) / 13.
     property var values: []
 
-    function updateValues()
-    {
-        var newvalues = [];
-        for(var i = 0; i < cosInfluence.points.length; i++)
-        {
-            var x1 = cosInfluence.points[i].x - centerX + sizeRatio / width;
-            var x2 = cosInfluence.points[i].y  - centerY + sizeRatio / width;
-            var dist = 3 * Math.sqrt(x1 * x1 + x2 * x2);
-            if(Math.abs(dist) < Math.PI / 2)
-                newvalues.push(Math.cos(dist));
+    function updateValues() {
+        var newvalues = []
+        for (var i = 0; i < cosInfluence.points.length; i++) {
+            var x1 = cosInfluence.points[i].x - centerX + sizeRatio / width
+            var x2 = cosInfluence.points[i].y - centerY + sizeRatio / width
+            var dist = 3 * Math.sqrt(x1 * x1 + x2 * x2)
+            if (Math.abs(dist) < Math.PI / 2)
+                newvalues.push(Math.cos(dist))
             else
-                newvalues.push(0);
+                newvalues.push(0)
         }
-        values = newvalues;
+        values = newvalues
     }
 
     // Mouse area for when the background is clicked
-    TouchArea
-    {
+    TouchArea {
+        id: touchArea
         anchors.fill: parent
         onPressed: applyPos(point)
         onPositionChanged: applyPos(point)
 
-        function applyPos(point)
-        {
-            centerX = Utils.clamp(point.x, 0, cosInfluence.width) / width;
-            centerY = Utils.clamp(point.y, 0, cosInfluence.height) / height;
+        function applyPos(point) {
+            centerX = Utils.clamp(point.x, 0, cosInfluence.width) / width
+            centerY = Utils.clamp(point.y, 0, cosInfluence.height) / height
         }
     }
 
     // The circles
-    Repeater
-    {
+    Repeater {
         model: points
-        delegate: Polygon
-        {
+        delegate: Polygon {
             smooth: true
             antialiasing: true
             x: points[index].x * cosInfluence.width
             y: points[index].y * cosInfluence.height
-            onXChanged: { points[index].x = x / cosInfluence.width; updateValues(); }
-            onYChanged: { points[index].y = y / cosInfluence.height; updateValues(); }
+            onXChanged: {
+                points[index].x = x / cosInfluence.width
+                updateValues()
+            }
+            onYChanged: {
+                points[index].y = y / cosInfluence.height
+                updateValues()
+            }
             width: 2. * sizeRatio
             height: width
             borderWidth: 0.05 * sizeRatio
-            fillColor: Styles.randomDetailColor()
-            borderColor: Styles.base//randomDetailColor()
+            fillColor: styles.randomDetailColor()
+            borderColor: dragArea.pressed ? styles.textPressedColor : styles.background
 
-            Text
-            {
+            Text {
                 anchors.centerIn: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
                 font.pointSize: Math.max(2, 1.1 * sizeRatio)
                 text: index
                 color: parent.borderColor
@@ -80,17 +86,18 @@ Rectangle
 
             Drag.hotSpot: Qt.point(width / 2, height / 2)
 
-            MouseArea
-            {
+            MouseArea {
                 id: dragArea
                 anchors.fill: parent
 
-                drag.target: parent
-                drag.smoothed: false
-                drag.minimumX: 0. - width / 2.
-                drag.maximumX: cosInfluence.width - width / 2.
-                drag.minimumY: 0 - height / 2.
-                drag.maximumY: cosInfluence.height - height / 2.
+                drag {
+                    target: parent
+                    smoothed: false
+                    minimumX: 0. - width / 2.
+                    maximumX: cosInfluence.width - width / 2.
+                    minimumY: 0 - height / 2.
+                    maximumY: cosInfluence.height - height / 2.
+                }
             }
         }
     }
@@ -99,7 +106,8 @@ Rectangle
     Crosshair {
         id: xy
         anchors.fill: parent
-        color: Styles.colorOn
+        color: xy.pressed
+               || touchArea.pressState ? styles.colorOn : styles.colorOff
+        radiusScale: xy.pressed || touchArea.pressState ? 25 : 35
     }
-
 }

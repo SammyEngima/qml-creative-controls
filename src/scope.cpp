@@ -1,5 +1,7 @@
 #include "scope.hpp"
+
 #include <QPainter>
+
 #include <cmath>
 
 namespace CreativeControls
@@ -24,7 +26,7 @@ void Scope::paint(QPainter* painter)
   painter->setRenderHint(QPainter::SmoothPixmapTransform);
   painter->setBrush(m_scopeBrush);
   painter->setPen(m_scopePen);
-  if(m_symmetrize)
+  if (m_symmetrize)
   {
     painter->drawPolygon(m_data);
   }
@@ -64,71 +66,76 @@ bool Scope::symmetrize() const
   return m_symmetrize;
 }
 
+/*!
+ * \brief Move given points to inner member.
+ * \note \c points could be empty after executing of this method.
+ * \param points vector of values that should be moved.
+ */
 void Scope::setPoints(QVector<qreal> points)
 {
   if (m_points == points)
     return;
 
-  m_points = points;
-  emit pointsChanged(points);
+  m_points = std::move(points);
+  emit pointsChanged(m_points);
   updatePath();
 }
 
-void Scope::setYMin(qreal yMin)
+void Scope::setYMin(const qreal yMin)
 {
-  if (m_yMin == yMin)
+  if (qFuzzyCompare(m_yMin, yMin))
     return;
 
   m_yMin = yMin;
-  emit yMinChanged(yMin);
+  emit yMinChanged(m_yMin);
   updatePath();
 }
 
-void Scope::setYMax(qreal yMax)
+void Scope::setYMax(const qreal yMax)
 {
-  if (m_yMax == yMax)
+  if (qFuzzyCompare(m_yMax, yMax))
     return;
 
   m_yMax = yMax;
-  emit yMaxChanged(yMax);
+  emit yMaxChanged(m_yMax);
   updatePath();
 }
 
-void Scope::setBaseColor(QColor baseColor)
+void Scope::setBaseColor(const QColor baseColor)
 {
   if (m_baseColor == baseColor)
     return;
 
   m_baseColor = baseColor;
   m_scopeBrush.setColor(m_baseColor);
-  emit baseColorChanged(baseColor);
+  emit baseColorChanged(m_baseColor);
   update();
 }
 
-void Scope::setDetailColor(QColor detailColor)
+void Scope::setDetailColor(const QColor detailColor)
 {
   if (m_detailColor == detailColor)
     return;
 
   m_detailColor = detailColor;
   m_scopePen.setColor(m_detailColor);
-  emit detailColorChanged(detailColor);
+  emit detailColorChanged(m_detailColor);
   update();
 }
 
-void Scope::setSymmetrize(bool symmetrize)
+void Scope::setSymmetrize(const bool symmetrize)
 {
   if (m_symmetrize == symmetrize)
     return;
 
   m_symmetrize = symmetrize;
-  emit symmetrizeChanged(symmetrize);
+  emit symmetrizeChanged(m_symmetrize);
   updatePath();
 }
 
 void Scope::updatePath()
 {
-  if(!m_symmetrize)
+  if (!m_symmetrize)
   {
     // y = yMin -> height
     // y = yMax -> 0
@@ -137,10 +144,10 @@ void Scope::updatePath()
     const auto h0 = height();
     const auto h1 = 0;
     const auto coeff = (h1 - h0) / (y1 - y0);
-    auto scale = [=] (qreal val) { return h0 + coeff * (val - y0); };
+    auto scale = [=](qreal val) { return h0 + coeff * (val - y0); };
 
     m_data.resize(2 * m_points.size());
-    if(m_points.size() > 0)
+    if (m_points.size() > 0)
     {
       const auto inc = width() / m_points.size();
 
@@ -149,7 +156,7 @@ void Scope::updatePath()
       QPointF start{x, scale(*it)};
       int i = 0;
       const auto end = m_points.cend();
-      for(; it != end; ++it)
+      for (; it != end; ++it)
       {
         m_data[i] = start;
         ++i;
@@ -171,25 +178,25 @@ void Scope::updatePath()
     const auto h0 = height() / 2.;
     const auto h1 = 0.;
     const auto coeff = (h1 - h0) / (y1 - y0);
-    auto scale = [=] (qreal val) { return h0 + coeff * (std::fabs(val) - y0); };
+    auto scale = [=](qreal val) { return h0 + coeff * (std::fabs(val) - y0); };
 
     m_data.resize(2 * m_points.size());
 
-    if(m_points.size() > 0.)
+    if (m_points.size() > 0.)
     {
       const auto inc = width() / (m_points.size() - 1);
       auto x = 0.;
 
       // Draw the upper part
       const auto Npts = m_points.size();
-      for(int i = 0; i < Npts; i++)
+      for (int i = 0; i < Npts; i++)
       {
         m_data[i] = {x, scale(m_points[i])};
         x += inc;
       }
 
       // Symmetrize
-      for(int i = 0; i < Npts; i++)
+      for (int i = 0; i < Npts; i++)
       {
         const auto top_pt = m_data[Npts - i - 1];
         m_data[Npts + i] = {top_pt.x(), (h - top_pt.y())};

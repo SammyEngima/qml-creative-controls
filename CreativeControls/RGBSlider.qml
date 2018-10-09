@@ -1,5 +1,5 @@
 import QtQuick 2.6
-import CreativeControls 1.0
+import com.github.jcelerier.CreativeControls 1.0
 import QtQuick.Layouts 1.3
 
 
@@ -7,8 +7,7 @@ import QtQuick.Layouts 1.3
 // Properties:
 // * color: the current color
 // * enableAlpha: show the alpha channel slider
-ColorSlider
-{
-    colorSpace : Qt.rgba
-    enableAlpha : false
+ColorSlider {
+    colorSpace: Qt.rgba
+    enableAlpha: false
 }
